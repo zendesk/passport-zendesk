@@ -1,0 +1,13 @@
+<% if (!user) { %>
+	<h2>Welcome! Please <a href="/login">log in.</a></h2>
+<% } else { %>
+	<h2>Hello, <%= user.displayName %>.</h2>
+  <% for(var i=0; i<user.photos.length; i++) {%>
+   <p><img src="<%= user.photos[i].value %>"/></p>
+  <% } %>
+  <p>ID: <%= user.id %></p>
+  <p>Name: <%= user.displayName %></p>
+  <% for(var i=0; i<user.emails.length; i++) {%>
+    <p>Email: <%= user.emails[i].value %></p>
+  <% } %>
+<% } %>
