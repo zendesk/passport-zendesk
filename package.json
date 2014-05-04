@@ -26,6 +26,7 @@
   "main": "./lib/passport-zendesk",
   "dependencies": {
     "pkginfo": "~0.3.0",
-    "passport-oauth": "~1.0.0"
+    "passport-oauth": "~1.0.0",
+    "oauth": "~0.9.11"
   }
 }
