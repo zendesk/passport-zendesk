@@ -28,5 +28,16 @@
     "pkginfo": "~0.3.0",
     "passport-oauth": "~1.0.0",
     "oauth": "~0.9.11"
+  },
+  "devDependencies": {
+    "mocha": "1.x.x",
+    "chai": "1.x.x",
+    "chai-passport-strategy": "0.2.x"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js"
   }
 }

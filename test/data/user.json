@@ -1,0 +1,55 @@
+{
+    "user": {
+        "id": 1234,
+        "url": "https://subdomain.zendesk.com/api/v2/users/1234.json",
+        "name": "John Doe",
+        "email": "jdoe@example.com",
+        "created_at": "2013-12-16T19:35:54Z",
+        "updated_at": "2014-05-03T20:14:28Z",
+        "time_zone": "Bogota",
+        "phone": "",
+        "photo": {
+            "url": "https://subdomain.zendesk.com/api/v2/attachments/1234.json",
+            "id": 1234,
+            "file_name": "__20__2_.JPG",
+            "content_url": "https://subdomain.zendesk.com/system/photos/1234/1234/__20__2_.JPG",
+            "mapped_content_url": "https://subdomain.zendesk.com/system/photos/1234/1234/__20__2_.JPG",
+            "content_type": "image/jpeg",
+            "size": 3288,
+            "thumbnails": [
+                {
+                    "url": "https://subdomain.zendesk.com/api/v2/attachments/12342644.json",
+                    "id": 12342644,
+                    "file_name": "__20__2__thumb.JPG",
+                    "content_url": "https://subdomain.zendesk.com/system/photos/1234/1234/__20__2__thumb.JPG",
+                    "mapped_content_url": "https://subdomain.zendesk.com/system/photos/1234/1234/__20__2__thumb.JPG",
+                    "content_type": "image/jpeg",
+                    "size": 3290
+                }
+            ]
+        },
+        "locale_id": 1181,
+        "locale": "en-ca",
+        "organization_id": 12345,
+        "role": "admin",
+        "verified": true,
+        "external_id": null,
+        "tags": [],
+        "alias": "",
+        "active": true,
+        "shared": false,
+        "shared_agent": false,
+        "last_login_at": "2014-05-04T22:06:56Z",
+        "signature": "",
+        "details": "",
+        "notes": "Lab Rat",
+        "custom_role_id": null,
+        "moderator": true,
+        "ticket_restriction": null,
+        "only_private_comments": false,
+        "restricted_agent": false,
+        "suspended": false,
+        "authenticity_token": "abcdefg1234",
+        "user_fields": {}
+    }
+}
