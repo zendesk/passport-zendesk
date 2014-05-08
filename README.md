@@ -21,9 +21,7 @@ passport.use(new ZendeskStrategy({
     callbackURL: 'https://www.example.net/auth/zendesk/callback',
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate(..., function (err, user) {
-      done(err, user);
-    });
+    done(err, user);
   }
 ));
 ```
