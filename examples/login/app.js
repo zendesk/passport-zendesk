@@ -1,6 +1,13 @@
 var express = require('express'),
+    bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    logger = require('morgan'),
     passport = require('passport'),
+    expressSession = require('express-session'),
     ZendeskStrategy = require('passport-zendesk').Strategy;
+
+var port = process.env.PORT || 3000;
 
 var ZENDESK_CLIENT_ID = "your_client_id_here";
 var ZENDESK_CLIENT_SECRET = "your_client_secret_here";
@@ -26,36 +33,34 @@ passport.deserializeUser(function(obj, done) {
 //   credentials (in this case, an accessToken, refreshToken, and Zendesk
 //   profile), and invoke a callback with a user object.
 passport.use(new ZendeskStrategy({
-        subdomain: ZENDESK_SUBDOMAIN,
-        clientID: ZENDESK_CLIENT_ID,
-        clientSecret: ZENDESK_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/zendesk/callback"
-    },
-    function(accessToken, refreshToken, profile, done) {
-        return done(null, profile);
-    }
+    subdomain: ZENDESK_SUBDOMAIN,
+    clientID: ZENDESK_CLIENT_ID,
+    clientSecret: ZENDESK_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/zendesk/callback"
+}, function(accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+}
 ));
 
 var app = express();
 
-// configure Express
-app.configure(function() {
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'ejs');
-    app.use(express.logger());
-    app.use(express.cookieParser());
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(express.session({
-        secret: 'keyboard cat'
-    }));
-    // Initialize Passport!  Also use passport.session() middleware, to support
-    // persistent login sessions (recommended).
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
-});
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(logger('combined'));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(methodOverride());
+app.use(expressSession({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Initialize Passport!  Also use passport.session() middleware, to support
+// persistent login sessions (recommended).
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(__dirname + '/public'));
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -83,8 +88,7 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/auth/zendesk',
-    passport.authenticate('zendesk'),
-    function() {
+    passport.authenticate('zendesk'), function() {
         // The request will be redirected to Zendesk for authentication, so this
         // function will not be called.
     });
@@ -92,8 +96,7 @@ app.get('/auth/zendesk',
 app.get('/auth/zendesk/callback',
     passport.authenticate('zendesk', {
         failureRedirect: '/login'
-    }),
-    function(req, res) {
+    }), function(req, res) {
         res.redirect('/');
     });
 
@@ -102,4 +105,5 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
-app.listen(3000);
+app.listen(port);
+console.log('Listening on port', port);
