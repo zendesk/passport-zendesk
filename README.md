@@ -17,7 +17,7 @@ var ZendeskStrategy = require('passport-zendesk').Strategy;
 passport.use(new ZendeskStrategy({
     subdomain: 'yourZendeskSubdomain',
     clientID: 'yourClientIdentifier',
-    clientSecret: 'yourClientSecret'
+    clientSecret: 'yourClientSecret',
     callbackURL: 'https://www.example.net/auth/zendesk/callback',
   },
   function(accessToken, refreshToken, profile, done) {
