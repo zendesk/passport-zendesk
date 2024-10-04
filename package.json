@@ -9,18 +9,18 @@
     "authn",
     "authentication"
   ],
-  "homepage": "http://github.com/radialpoint/passport-zendesk",
-  "bugs": "https://github.com/radialpoint/passport-zendesk/issues",
+  "homepage": "http://github.com/zendesk/passport-zendesk",
+  "bugs": "https://github.com/zendesk/passport-zendesk/issues",
   "author": {
     "name": "Andrew Lavers",
     "email": "alavers@system42.net"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/radialpoint/passport-zendesk"
+    "url": "https://github.com/zendesk/passport-zendesk"
   },
   "bugs": {
-    "url": "http://github.com/radialpoint/passport-zendesk/issues"
+    "url": "http://github.com/zendesk/passport-zendesk/issues"
   },
   "license": "Apache 2.0",
   "main": "./lib/passport-zendesk",
