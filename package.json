@@ -1,6 +1,6 @@
 {
   "name": "passport-zendesk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Zendesk authentication strategy for Passport.",
   "keywords": [
     "passport",
@@ -10,7 +10,9 @@
     "authentication"
   ],
   "homepage": "http://github.com/zendesk/passport-zendesk",
-  "bugs": "https://github.com/zendesk/passport-zendesk/issues",
+  "bugs": {
+    "url": "http://github.com/zendesk/passport-zendesk/issues"
+  },
   "author": {
     "name": "Andrew Lavers",
     "email": "alavers@system42.net"
@@ -18,9 +20,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/zendesk/passport-zendesk"
-  },
-  "bugs": {
-    "url": "http://github.com/zendesk/passport-zendesk/issues"
   },
   "license": "Apache 2.0",
   "main": "./lib/passport-zendesk",
