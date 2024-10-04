@@ -63,7 +63,7 @@ app.get('/auth/zendesk',
 
 ## Examples
 
-For a complete, working sample: [login example](https://github.com/radialpoint/passport-zendesk/tree/master/examples/login).
+For a complete, working sample: [login example](https://github.com/zendesk/passport-zendesk/tree/master/examples/login).
 
 ## Thanks
 
