@@ -1,9 +1,8 @@
-/* global describe, it, expect, before */
-/* jshint expr: true */
-
-var chai = require('chai');
-var ZendeskStrategy = require('..');
-var mock = require('./mock');
+const chai = require('chai');
+const { expect } = chai;
+const ZendeskStrategy = require('..');
+const mock = require('./mock');
+const { passport } = require('./chai.passport.strategy');
 
 describe('Strategy', function() {
 
@@ -30,12 +29,12 @@ describe('Strategy', function() {
 
     before(function(done) {
 
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .redirect(function(l) {
           location = l;
           done();
         })
-        .req(function(req) {
+        .request(function(req) {
           req.query = {};
         })
         .authenticate();
@@ -51,12 +50,12 @@ describe('Strategy', function() {
 
     before(function(done) {
 
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .success(function(u) {
           user = u;
           done();
         })
-        .req(function(req) {
+        .request(function(req) {
           req.query = {};
           req.query.code = 'mockcode';
         })
@@ -72,14 +71,14 @@ describe('Strategy', function() {
     var info;
   
     before(function(done) {
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .fail(function(i) {
           info = i;
           done();
         })
         // Simulate Zendesk user denied error
         // https://support.zendesk.com/entries/24458591-Using-OAuth-authentication-with-your-application
-        .req(function(req) {
+        .request(function(req) {
           req.query = {};
           req.query.error = 'access_denied';
           req.query.error_description  = 'The+end-user+or+authorization+server+denied+the+request.';

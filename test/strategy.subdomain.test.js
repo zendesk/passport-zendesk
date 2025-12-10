@@ -1,11 +1,9 @@
-/* global describe, it, expect, before */
-/* jshint expr: true */
-
-var chai = require('chai');
-var ZendeskStrategy = require('..');
-var fs = require('fs');
-var querystring = require('querystring');
-var mock = require('./mock');
+const chai = require('chai');
+const { expect } = chai;
+const { passport } = require('./chai.passport.strategy');
+const ZendeskStrategy = require('..');
+const querystring = require('querystring');
+const mock = require('./mock');
 
 describe('Strategy with dynammic subdomain', function() {
   var strategy = new ZendeskStrategy({
@@ -22,13 +20,15 @@ describe('Strategy with dynammic subdomain', function() {
   describe('with missing subdomain', function() {
     var err;
 
+    var t = passport.use(strategy);
+
     before(function(done) {
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .error(function(e){
           err = e;
           done();
         })
-        .req(function(req) {
+        .request(function(req) {
           req.session = {};
           req.query = {};
         })
@@ -44,12 +44,12 @@ describe('Strategy with dynammic subdomain', function() {
     var redirectUrl;
 
     before(function(done) {
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .redirect(function(location){
           redirectUrl = location;
           done();
         })
-        .req(function(req) {
+        .request(function(req) {
           req.session = {};
           req.query = {};
           req.query.subdomain = mock.subdomain;
@@ -66,12 +66,12 @@ describe('Strategy with dynammic subdomain', function() {
     var redirectUrl;
 
     before(function(done) {
-      chai.passport.use(strategy)
+      passport.use(strategy)
         .redirect(function(location){
           redirectUrl = location;
           done();
         })
-        .req(function(req) {
+        .request(function(req) {
           req.session = {};
           req.body = querystring.stringify({subdomain: mock.subdomain});
         })

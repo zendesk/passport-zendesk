@@ -24,19 +24,19 @@
   "license": "Apache 2.0",
   "main": "./lib/passport-zendesk",
   "dependencies": {
-    "pkginfo": "~0.3.0",
+    "oauth": "~0.9.11",
     "passport-oauth": "~1.0.0",
-    "oauth": "~0.9.11"
+    "pkginfo": "~0.3.0"
   },
   "devDependencies": {
-    "mocha": "1.x.x",
-    "chai": "1.x.x",
-    "chai-passport-strategy": "0.2.x"
+    "chai": "^6.2.1",
+    "chai-passport-strategy": "^3.0.0",
+    "mocha": "^11.7.5"
   },
   "engines": {
     "node": ">= 0.4.0"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js"
+    "test": "mocha test/*.test.js"
   }
 }
