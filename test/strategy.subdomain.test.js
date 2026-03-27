@@ -58,7 +58,7 @@ describe('Strategy with dynammic subdomain', function() {
     });
 
     it('should redirect to correct zendesk subdomain', function() {
-      expect(redirectUrl).to.equal(mock.authorizationURL);
+      expect(redirectUrl).to.include(mock.authorizationURL);
     })
   });
 
@@ -79,16 +79,17 @@ describe('Strategy with dynammic subdomain', function() {
     });
 
     it('should redirect to correct zendesk subdomain', function() {
-      expect(redirectUrl).to.equal(mock.authorizationURL);
+      expect(redirectUrl).to.include(mock.authorizationURL);
     })
   });
 
   describe('with malicious subdomain containing # (token-endpoint injection)', function() {
     var capturedTokenURL;
     var authError;
+    var attackStrategy;
 
     before(function(done) {
-      var attackStrategy = new ZendeskStrategy(
+      attackStrategy = new ZendeskStrategy(
         { clientID: 'testclientid', clientSecret: 'testSecret' },
         function(accessToken, refreshToken, profile, done) { done(null, profile); }
       );
@@ -122,5 +123,33 @@ describe('Strategy with dynammic subdomain', function() {
     it('should not construct an OAuth2 client for the attacker domain', function() {
       expect(capturedTokenURL).to.equal(undefined);
     });
+  });
+});
+
+describe('Strategy _oauth2Map instance isolation', function() {
+  it('should not share the OAuth2 cache between instances with different credentials', function() {
+    var clientsCreated = [];
+
+    function makeStrategy(clientID) {
+      var s = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: clientID, clientSecret: 'secret' },
+        function() {}
+      );
+      s._createOauth2 = function(id) {
+        var client = { clientID: id };
+        clientsCreated.push(client);
+        return client;
+      };
+      return s;
+    }
+
+    var s1 = makeStrategy('id-one');
+    var s2 = makeStrategy('id-two');
+
+    var c1 = s1._oauth2ForSubdomain(mock.subdomain);
+    var c2 = s2._oauth2ForSubdomain(mock.subdomain);
+
+    expect(c1).to.not.equal(c2);
+    expect(clientsCreated).to.have.length(2);
   });
 });

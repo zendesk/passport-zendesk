@@ -35,7 +35,8 @@ module.exports = {
             return callback(null, 'mocktoken');
           },
           getAuthorizeUrl: function(params) {
-            return authorizePath;
+            var qs = require('querystring').stringify(params);
+            return authorizePath + (qs ? '?' + qs : '');
           },
           get: function(url, accessToken, callback) {
             callback(null, mockUser);

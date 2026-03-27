@@ -15,6 +15,22 @@ describe('Strategy', function() {
         );
       }).to.throw(Error, 'Invalid subdomain');
     });
+
+    it('should set _state from options', function() {
+      var s = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'id', clientSecret: 'secret', state: true },
+        function() {}
+      );
+      expect(s._state).to.equal(true);
+    });
+
+    it('should leave _state falsy when not provided', function() {
+      var s = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'id', clientSecret: 'secret' },
+        function() {}
+      );
+      expect(s._state).to.not.be.ok;
+    });
   });
 
   var strategy = new ZendeskStrategy({
@@ -52,7 +68,7 @@ describe('Strategy', function() {
     });
 
     it('should succeed', function() {
-      expect(location).to.equal(mock.authorizationURL);
+      expect(location).to.include(mock.authorizationURL);
     })
   });
 
@@ -75,6 +91,63 @@ describe('Strategy', function() {
 
     it('should succeeed', function() {
       expect(user).to.deep.equal(mock.getParsedUser());
+    });
+  });
+
+  describe('with state: true', function() {
+    var stateStrategy;
+
+    before(function(done) {
+      stateStrategy = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'testclientid', clientSecret: 'testSecret', state: true },
+        function(accessToken, refreshToken, profile, done) { done(null, profile); }
+      );
+      mock.inject(stateStrategy, done);
+    });
+
+    describe('authorization redirect', function() {
+      var location;
+      var session;
+
+      before(function(done) {
+        passport.use(stateStrategy)
+          .redirect(function(l) { location = l; done(); })
+          .request(function(req) {
+            req.query = {};
+            req.session = {};
+            session = req.session;
+          })
+          .authenticate();
+      });
+
+      it('should include a state param in the redirect URL', function() {
+        expect(location).to.match(/[?&]state=/);
+      });
+
+      it('should store state in session', function() {
+        var key = stateStrategy._key;
+        expect(session[key]).to.have.property('state');
+      });
+    });
+
+    describe('callback with mismatched state', function() {
+      var failStatus;
+
+      before(function(done) {
+        var key = stateStrategy._key;
+        passport.use(stateStrategy)
+          .fail(function(info, status) { failStatus = status; done(); })
+          .request(function(req) {
+            req.query = { code: 'mockcode', state: 'wrong-state' };
+            req.session = {};
+            req.session[key] = { state: 'correct-state' };
+          })
+          .authenticate();
+      });
+
+      it('should fail with 403', function() {
+        expect(failStatus).to.equal(403);
+      });
     });
   });
 
