@@ -24,12 +24,12 @@ describe('Strategy', function() {
       expect(s._state).to.equal(true);
     });
 
-    it('should leave _state falsy when not provided', function() {
+    it('should default _state to true when not provided', function() {
       var s = new ZendeskStrategy(
         { subdomain: mock.subdomain, clientID: 'id', clientSecret: 'secret' },
         function() {}
       );
-      expect(s._state).to.not.be.ok;
+      expect(s._state).to.equal(true);
     });
   });
 
@@ -63,6 +63,7 @@ describe('Strategy', function() {
         })
         .request(function(req) {
           req.query = {};
+          req.session = {};
         })
         .authenticate();
     });
@@ -83,8 +84,10 @@ describe('Strategy', function() {
           done();
         })
         .request(function(req) {
-          req.query = {};
-          req.query.code = 'mockcode';
+          var key = strategy._key;
+          req.session = {};
+          req.session[key] = { state: 'teststate' };
+          req.query = { code: 'mockcode', state: 'teststate' };
         })
         .authenticate();
     });
