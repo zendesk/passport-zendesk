@@ -36,7 +36,8 @@ passport.use(new ZendeskStrategy({
     subdomain: ZENDESK_SUBDOMAIN,
     clientID: ZENDESK_CLIENT_ID,
     clientSecret: ZENDESK_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/zendesk/callback"
+    callbackURL: "http://localhost:3000/auth/zendesk/callback",
+    state: true
 }, function(accessToken, refreshToken, profile, done) {
     return done(null, profile);
 }

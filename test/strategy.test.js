@@ -6,6 +6,33 @@ const { passport } = require('./chai.passport.strategy');
 
 describe('Strategy', function() {
 
+  describe('constructor', function() {
+    it('should throw for an invalid subdomain', function() {
+      expect(function() {
+        new ZendeskStrategy(
+          { subdomain: 'evil.com#', clientID: 'id', clientSecret: 'secret' },
+          function() {}
+        );
+      }).to.throw(Error, 'Invalid subdomain');
+    });
+
+    it('should set _state from options', function() {
+      var s = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'id', clientSecret: 'secret', state: true },
+        function() {}
+      );
+      expect(s._state).to.equal(true);
+    });
+
+    it('should default _state to true when not provided', function() {
+      var s = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'id', clientSecret: 'secret' },
+        function() {}
+      );
+      expect(s._state).to.equal(true);
+    });
+  });
+
   var strategy = new ZendeskStrategy({
       subdomain: mock.subdomain,
       clientID: 'testclientid',
@@ -36,12 +63,13 @@ describe('Strategy', function() {
         })
         .request(function(req) {
           req.query = {};
+          req.session = {};
         })
         .authenticate();
     });
 
     it('should succeed', function() {
-      expect(location).to.equal(mock.authorizationURL);
+      expect(location).to.include(mock.authorizationURL);
     })
   });
 
@@ -56,14 +84,89 @@ describe('Strategy', function() {
           done();
         })
         .request(function(req) {
-          req.query = {};
-          req.query.code = 'mockcode';
+          var key = strategy._key;
+          req.session = {};
+          req.session[key] = { state: 'teststate' };
+          req.query = { code: 'mockcode', state: 'teststate' };
         })
         .authenticate();
     });
 
     it('should succeeed', function() {
       expect(user).to.deep.equal(mock.getParsedUser());
+    });
+  });
+
+  describe('with state: true', function() {
+    var stateStrategy;
+
+    before(function(done) {
+      stateStrategy = new ZendeskStrategy(
+        { subdomain: mock.subdomain, clientID: 'testclientid', clientSecret: 'testSecret', state: true },
+        function(accessToken, refreshToken, profile, done) { done(null, profile); }
+      );
+      mock.inject(stateStrategy, done);
+    });
+
+    describe('authorization redirect', function() {
+      var location;
+      var session;
+
+      before(function(done) {
+        passport.use(stateStrategy)
+          .redirect(function(l) { location = l; done(); })
+          .request(function(req) {
+            req.query = {};
+            req.session = {};
+            session = req.session;
+          })
+          .authenticate();
+      });
+
+      it('should include a state param in the redirect URL', function() {
+        expect(location).to.match(/[?&]state=/);
+      });
+
+      it('should store state in session', function() {
+        var key = stateStrategy._key;
+        expect(session[key]).to.have.property('state');
+      });
+    });
+
+    describe('callback with mismatched state', function() {
+      var failStatus;
+
+      before(function(done) {
+        var key = stateStrategy._key;
+        passport.use(stateStrategy)
+          .fail(function(info, status) { failStatus = status; done(); })
+          .request(function(req) {
+            req.query = { code: 'mockcode', state: 'wrong-state' };
+            req.session = {};
+            req.session[key] = { state: 'correct-state' };
+          })
+          .authenticate();
+      });
+
+      it('should fail with 403', function() {
+        expect(failStatus).to.equal(403);
+      });
+    });
+  });
+
+  describe('retrieving user profile with an invalid subdomain', function() {
+    var profileError;
+
+    before(function(done) {
+      strategy.userProfile('mocktoken', 'evil.com#', function(err) {
+        profileError = err;
+        done();
+      });
+    });
+
+    it('should error', function() {
+      expect(profileError).to.be.an.instanceof(Error);
+      expect(profileError.message).to.equal('Invalid subdomain');
     });
   });
 

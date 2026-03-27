@@ -2,6 +2,10 @@
 
 Zendesk OAuth2 strategy for [Passport](http://passportjs.org).
 
+## ⚠️ Warning
+
+This package does not support all of the currently mandated OAuth 2.0 best practices documented [here](https://datatracker.ietf.org/doc/html/rfc9700). Notably, there is no PKCE support, and the simplified passport.authenticate middleware approach does not facilitate [refresh tokens](https://developer.zendesk.com/documentation/api-basics/authentication/refresh-token/).
+
 ## Install
 
     $ npm install passport-zendesk
@@ -19,6 +23,7 @@ passport.use(new ZendeskStrategy({
     clientID: 'yourClientIdentifier',
     clientSecret: 'yourClientSecret',
     callbackURL: 'https://www.example.net/auth/zendesk/callback',
+    state: true
   },
   function(accessToken, refreshToken, profile, done) {
     done(err, user);
