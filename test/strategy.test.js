@@ -6,6 +6,17 @@ const { passport } = require('./chai.passport.strategy');
 
 describe('Strategy', function() {
 
+  describe('constructor', function() {
+    it('should throw for an invalid subdomain', function() {
+      expect(function() {
+        new ZendeskStrategy(
+          { subdomain: 'evil.com#', clientID: 'id', clientSecret: 'secret' },
+          function() {}
+        );
+      }).to.throw(Error, 'Invalid subdomain');
+    });
+  });
+
   var strategy = new ZendeskStrategy({
       subdomain: mock.subdomain,
       clientID: 'testclientid',
@@ -64,6 +75,22 @@ describe('Strategy', function() {
 
     it('should succeeed', function() {
       expect(user).to.deep.equal(mock.getParsedUser());
+    });
+  });
+
+  describe('retrieving user profile with an invalid subdomain', function() {
+    var profileError;
+
+    before(function(done) {
+      strategy.userProfile('mocktoken', 'evil.com#', function(err) {
+        profileError = err;
+        done();
+      });
+    });
+
+    it('should error', function() {
+      expect(profileError).to.be.an.instanceof(Error);
+      expect(profileError.message).to.equal('Invalid subdomain');
     });
   });
 
